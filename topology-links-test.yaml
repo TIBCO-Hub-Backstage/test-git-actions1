@@ -1,0 +1,33 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: link-test-system
+  description: 'Test system for exercising the topology external-links display'
+spec:
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: many-links-service
+  description: 'Component with 7 external links to test the External Links (count) badge and Show all / Show less toggle in the topology card'
+  links:
+    - url: https://www.tibco.com/
+      title: TIBCO Home
+    - url: https://docs.tibco.com/
+      title: Documentation
+    - url: https://community.tibco.com/
+      title: Community
+    - url: https://github.com/TIBCOSoftware/tibco-developer-hub
+      title: Source Repository
+    - url: https://status.tibco.com/
+      title: Status Page
+    - url: https://support.tibco.com/
+      title: Support Portal
+    - url: https://www.tibco.com/blog
+      title: Engineering Blog
+spec:
+  type: service
+  lifecycle: production
+  system: link-test-system
+  owner: guests
