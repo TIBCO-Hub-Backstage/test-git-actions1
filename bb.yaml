@@ -1,0 +1,95 @@
+# Copyright (c) 2023-2026. Cloud Software Group, Inc. All Rights Reserved. Confidential & Proprietary
+#
+# Self-contained example for the topology card's "Run Template" button.
+#
+# It contains:
+#   1. A scaffolder Template (`topology-example-template`) whose form fields are
+#      named `name`, `namespace` and `owner` so they line up with the values the
+#      topology card prefills.
+#   2. A System + Component (the topology item). The Component carries the
+#      `tibco.developer.hub/run-template` annotation pointing at the template,
+#      which makes the "Run Template" button appear in its topology card and
+#      deep-links to the template run page with name/namespace/owner prefilled.
+#
+# The template uses only the built-in `debug:log` action, so it runs end-to-end
+# without any skeleton files or external fetch.
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: topology-example-template
+  title: Topology Example Template
+  description: >-
+    Demo template launched from the topology card. Shows how name, namespace and
+    owner arrive pre-populated in the form.
+  tags:
+    - tibco
+    - example
+    - topology
+spec:
+  owner: guests
+  type: service
+
+  parameters:
+    - title: Prefilled from the topology card
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Prefilled with the entity's name.
+          ui:autofocus: true
+        namespace:
+          title: Namespace
+          type: string
+          description: Prefilled with the entity's namespace.
+        owner:
+          title: Owner
+          type: string
+          description: Prefilled with the entity's owner.
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - Group
+                - User
+
+  steps:
+    - id: log
+      name: Echo the prefilled values
+      action: debug:log
+      input:
+        message: >-
+          Running for name=${{ parameters.name }},
+          namespace=${{ parameters.namespace }}, owner=${{ parameters.owner }}
+
+  output:
+    text:
+      - title: Done
+        content: |
+          Template ran for **${{ parameters.name }}**
+          (namespace `${{ parameters.namespace }}`, owner `${{ parameters.owner }}`).
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: run-template-example-system
+  description: 'Test system for the topology Run Template button'
+spec:
+  owner: guests
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: run-template-example-service
+  description: 'Component whose topology card shows a "Run Template" button that opens topology-example-template with name/namespace/owner prefilled'
+  annotations:
+    # Makes the "Run Template" button appear in this entity's topology card and
+    # deep-links to the template above with name/namespace/owner prefilled.
+    tibco.developer.hub/run-template: topology-example-template
+spec:
+  type: service
+  lifecycle: production
+  system: run-template-example-system
+  owner: guests
